@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Premium EV Charging Monitor | Smart Balance System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-light: #818CF8;
+            --primary-dark: #4F46E5;
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --success: #10B981;
+            --dark: #111827;
+            --dark-card: #1F2937;
+            --light: #F9FAFB;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            --gradient-success: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+            --gradient-warning: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+            --gradient-dark: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+        }
+
+        [data-theme="dark"] {
+            --primary: #818CF8;
+            --primary-light: #A5B4FC;
+            --primary-dark: #6366F1;
+            --secondary: #34D399;
+            --secondary-light: #6EE7B7;
+            --warning: #FBBF24;
+            --danger: #F87171;
+            --success: #34D399;
+            --dark: #030712;
+            --dark-card: #111827;
+            --light: #374151;
+            --card-bg: rgba(31, 41, 55, 0.95);
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--gradient-dark);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 300px;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 i {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3.5rem;
+        }
+
+        .theme-toggle {
+            width: 70px;
+            height: 34px;
+            background: var(--light);
+            border-radius: 17px;
+            position: relative;
+            cursor: pointer;
+            border: 2px solid var(--primary);
+            transition: all 0.3s;
+        }
+
+        .theme-toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        [data-theme="dark"] .theme-toggle::after {
+            transform: translateX(36px);
+        }
+
+        /* Connection Status - Removed as requested */
+        .connection-status {
+            display: none;
+        }
+
+        /* Balance Card */
+        .balance-card {
+            background: var(--gradient-primary);
+            border-radius: 24px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            color: white;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1%, transparent 1%);
+            background-size: 30px 30px;
+            opacity: 0.3;
+        }
+
+        .balance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .balance-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .balance-amount {
+            font-size: 4.5rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .balance-controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .balance-btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .balance-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .balance-btn.primary {
+            background: rgba(255, 255, 255, 0.3);
+            font-size: 1.2rem;
+        }
+
+        /* Money Modal */
+        .money-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .money-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--danger);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        .amount-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .amount-option {
+            padding: 25px;
+            background: var(--light);
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .amount-option {
+            color: white;
+        }
+
+        .amount-option:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .amount-option.selected {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .amount-option .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--success);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .custom-amount {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .custom-amount input {
+            flex: 1;
+            padding: 18px 25px;
+            border-radius: 16px;
+            border: 2px solid var(--light);
+            background: var(--light);
+            font-size: 1.2rem;
+            color: var(--dark);
+            transition: all 0.3s;
+        }
+
+        [data-theme="dark"] .custom-amount input {
+            color: white;
+        }
+
+        .custom-amount input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .add-money-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .add-money-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Main Data Grid */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .data-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--gradient-primary);
+            opacity: 0.8;
+        }
+
+        .data-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .card-title {
+            color: #aaa;
+        }
+
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            background: var(--gradient-primary);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .voltage .card-icon { background: linear-gradient(135deg, #6366F1, #8B5CF6); }
+        .current .card-icon { background: linear-gradient(135deg, #10B981, #34D399); }
+        .power .card-icon { background: linear-gradient(135deg, #F59E0B, #FBBF24); }
+        .energy .card-icon { background: linear-gradient(135deg, #8B5CF6, #EC4899); }
+        .status-main .card-icon { background: linear-gradient(135deg, #06B6D4, #3B82F6); }
+        .efficiency .card-icon { background: linear-gradient(135deg, #EF4444, #F97316); }
+
+        .card-value {
+            font-size: 5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 15px;
+            letter-spacing: -2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-unit {
+            font-size: 2rem;
+            color: #888;
+            font-weight: 600;
+            margin-left: 10px;
+            opacity: 0.8;
+        }
+
+        .card-details {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        [data-theme="dark"] .card-details {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+        }
+
+        /* Power Toggle */
+        .power-toggle {
+            background: var(--gradient-warning);
+            border-radius: 24px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .toggle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .toggle-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .toggle-switch {
+            width: 100px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .toggle-switch.active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 34px;
+            height: 34px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(50px);
+        }
+
+        .toggle-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .toggle-rate {
+            font-size: 1.3rem;
+            opacity: 0.9;
+        }
+
+        .toggle-timer {
+            font-size: 2.5rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Statistics Panel */
+        .stats-container {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .stat-item {
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+            border-radius: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        [data-theme="dark"] .stat-label {
+            color: #aaa;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Timeline */
+        .timeline-container {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 30px;
+        }
+
+        .timeline-items {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+            padding-right: 10px;
+        }
+
+        .timeline-item {
+            padding: 20px 25px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.08), transparent);
+            border-radius: 0 16px 16px 0;
+            animation: slideIn 0.4s ease-out;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 3px solid var(--card-bg);
+        }
+
+        .timeline-time {
+            font-size: 0.9rem;
+            color: #666;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        [data-theme="dark"] .timeline-time {
+            color: #aaa;
+        }
+
+        .timeline-value {
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        [data-theme="dark"] .timeline-value {
+            color: #fff;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes highlight {
+            0% { background-color: rgba(99, 102, 241, 0.2); }
+            100% { background-color: transparent; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+        }
+
+        .data-updated {
+            animation: highlight 1s ease-out;
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .data-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-value {
+                font-size: 4rem;
+            }
+            
+            .balance-amount {
+                font-size: 3.5rem;
+            }
+            
+            .amount-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .card-value {
+                font-size: 3.5rem;
+            }
+            
+            .balance-controls {
+                flex-direction: column;
+            }
+            
+            .balance-btn {
+                width: 100%;
+            }
+            
+            .amount-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            border: 3px solid var(--card-bg);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+
+        /* Premium Glow Effects */
+        .glow-effect {
+            position: relative;
+        }
+
+        .glow-effect::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-primary);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .glow-effect:hover::after {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header glow-effect">
+            <div class="header-top">
+                <h1>
+                    <i class="fas fa-bolt"></i>
+                    ⚡ Premium EV Charging Monitor
+                </h1>
+                <div class="theme-toggle" id="themeToggle"></div>
+            </div>
+            <p style="color: #666; font-size: 1.2rem; font-weight: 500;">
+                <i class="fas fa-crown" style="color: #F59E0B;"></i> Smart Balance System • Real-time Monitoring • Automated Billing
+            </p>
+        </div>
+
+        <!-- Balance Card -->
+        <div class="balance-card pulse-glow">
+            <div class="balance-header">
+                <div class="balance-title">
+                    <i class="fas fa-wallet"></i> WALLET BALANCE
+                </div>
+                <div class="balance-amount" id="balanceAmount">₹0.00</div>
+            </div>
+            <p style="opacity: 0.9; font-size: 1.1rem; margin-top: 10px;">
+                <i class="fas fa-info-circle"></i> ₹1 deducted per Watt • Auto-cut when balance is low
+            </p>
+            <div class="balance-controls">
+                <button class="balance-btn" id="addMoneyBtn">
+                    <i class="fas fa-plus-circle"></i> ADD MONEY
+                </button>
+                <button class="balance-btn primary" id="viewTransactionsBtn">
+                    <i class="fas fa-history"></i> TRANSACTION HISTORY
+                </button>
+            </div>
+        </div>
+
+        <!-- Money Add Modal -->
+        <div class="money-modal" id="moneyModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <i class="fas fa-coins"></i> ADD MONEY TO WALLET
+                    </div>
+                    <button class="close-modal" id="closeModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="font-size: 1.2rem; color: #666; margin-bottom: 10px;">
+                        Select Amount or Enter Custom
+                    </div>
+                    <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); font-family: 'Courier New', monospace;">
+                        ₹<span id="selectedAmount">100</span>
+                    </div>
+                </div>
+                
+                <div class="amount-grid">
+                    <div class="amount-option" data-amount="50">
+                        ₹50
+                        <span class="badge">Popular</span>
+                    </div>
+                    <div class="amount-option selected" data-amount="100">
+                        ₹100
+                        <span class="badge">Best Value</span>
+                    </div>
+                    <div class="amount-option" data-amount="200">
+                        ₹200
+                    </div>
+                    <div class="amount-option" data-amount="500">
+                        ₹500
+                        <span class="badge">Save 5%</span>
+                    </div>
+                    <div class="amount-option" data-amount="1000">
+                        ₹1000
+                        <span class="badge">Save 10%</span>
+                    </div>
+                    <div class="amount-option" data-amount="2000">
+                        ₹2000
+                        <span class="badge">Premium</span>
+                    </div>
+                </div>
+                
+                <div class="custom-amount">
+                    <input type="number" id="customAmount" placeholder="Enter custom amount (₹)" min="10" max="10000">
+                    <button class="add-money-btn" id="confirmAddMoney">
+                        <i class="fas fa-check-circle"></i> ADD ₹<span id="confirmAmount">100</span>
+                    </button>
+                </div>
+                
+                <div style="margin-top: 25px; text-align: center; color: #666; font-size: 0.9rem;">
+                    <i class="fas fa-shield-alt"></i> Secure payment • Instant processing
+                </div>
+            </div>
+        </div>
+
+        <!-- Power Toggle -->
+        <div class="power-toggle">
+            <div class="toggle-header">
+                <div class="toggle-title">
+                    <i class="fas fa-power-off"></i> CHARGING CONTROL
+                </div>
+                <div class="toggle-switch" id="powerToggle"></div>
+            </div>
+            <div style="font-size: 1.3rem; opacity: 0.9; margin-bottom: 15px;">
+                Status: <span id="chargingStatus" style="font-weight: 700;">DISCONNECTED</span>
+            </div>
+            <div class="toggle-info">
+                <div class="toggle-rate">
+                    <i class="fas fa-rupee-sign"></i> Rate: ₹1 per Watt
+                </div>
+                <div class="toggle-timer" id="chargingTimer">
+                    00:00:00
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Data Grid -->
+        <div class="data-grid">
+            <!-- Voltage Card -->
+            <div class="data-card voltage glow-effect">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        VOLTAGE
+                    </div>
+                    <div class="card-unit">V</div>
+                </div>
+                <div class="card-value" id="voltageValue">0.000</div>
+                <div class="card-details">
+                    <span id="voltageDetail">Bus Voltage</span>
+                    <span id="loadVoltage">Load: 0.000V</span>
+                </div>
+            </div>
+
+            <!-- Current Card -->
+            <div class="data-card current glow-effect">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-bolt-lightning"></i>
+                        </div>
+                        CURRENT
+                    </div>
+                    <div class="card-unit">mA</div>
+                </div>
+                <div class="card-value" id="currentValue">0.000</div>
+                <div class="card-details">
+                    <span id="currentDetail">DC Current</span>
+                    <span id="currentA">0.000 A</span>
+                </div>
+            </div>
+
+            <!-- Power Card -->
+            <div class="data-card power glow-effect">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        POWER
+                    </div>
+                    <div class="card-unit">mW</div>
+                </div>
+                <div class="card-value" id="powerValue">0.000</div>
+                <div class="card-details">
+                    <span id="powerDetail">Real Power</span>
+                    <span id="powerW">0.000 W</span>
+                </div>
+            </div>
+
+            <!-- Energy Card -->
+            <div class="data-card energy glow-effect">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-battery-full"></i>
+                        </div>
+                        ENERGY
+                    </div>
+                    <div class="card-unit">Wh</div>
+                </div>
+                <div class="card-value" id="energyValue">0.000</div>
+                <div class="card-details">
+                    <span id="energyDetail">Total Consumption</span>
+                    <span id="energyRate">0.000 W/h</span>
+                </div>
+            </div>
+
+            <!-- Status Card -->
+            <div class="data-card status-main glow-effect">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-car-battery"></i>
+                        </div>
+                        SYSTEM STATUS
+                    </div>
+                </div>
+                <div class="card-value" id="statusValue">READY</div>
+                <div class="card-details">
+                    <span id="statusDetail">System Ready</span>
+                    <span id="samplesCount">Samples: 0</span>
+                </div>
+            </div>
+
+            <!-- Efficiency Card -->
+            <div class="data-card efficiency glow-effect">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        EFFICIENCY
+                    </div>
+                    <div class="card-unit">%</div>
+                </div>
+                <div class="card-value" id="efficiencyValue">0.00</div>
+                <div class="card-details">
+                    <span id="efficiencyDetail">System Efficiency</span>
+                    <span id="powerFactor">PF: 0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Panel -->
+        <div class="stats-container">
+            <h2 style="color: var(--primary); margin-bottom: 10px; font-size: 2rem;">
+                <i class="fas fa-chart-bar"></i> PERFORMANCE METRICS
+            </h2>
+            <p style="color: #666; margin-bottom: 20px; font-size: 1.1rem;">
+                Advanced statistics and analytics
+            </p>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <i class="fas fa-arrow-down"></i> Minimum Voltage
+                    </div>
+                    <div class="stat-value" id="minVoltage">0.000 V</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <i class="fas fa-arrow-up"></i> Maximum Voltage
+                    </div>
+                    <div class="stat-value" id="maxVoltage">0.000 V</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <i class="fas fa-arrow-down"></i> Minimum Current
+                    </div>
+                    <div class="stat-value" id="minCurrent">0.000 mA</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <i class="fas fa-arrow-up"></i> Maximum Current
+                    </div>
+                    <div class="stat-value" id="maxCurrent">0.000 mA</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <i class="fas fa-calculator"></i> Average Voltage
+                    </div>
+                    <div class="stat-value" id="avgVoltage">0.000 V</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <i class="fas fa-calculator"></i> Average Current
+                    </div>
+                    <div class="stat-value" id="avgCurrent">0.000 mA</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <i class="fas fa-history"></i> Session Time
+                    </div>
+                    <div class="stat-value" id="systemUptime">00:00:00</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <i class="fas fa-database"></i> Total Samples
+                    </div>
+                    <div class="stat-value" id="totalSamples">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-container">
+            <h2 style="color: var(--primary); margin-bottom: 10px; font-size: 2rem;">
+                <i class="fas fa-stream"></i> REAL-TIME DATA STREAM
+            </h2>
+            <p style="color: #666; margin-bottom: 20px; font-size: 1.1rem;">
+                Live monitoring updates and events
+            </p>
+            
+            <div class="timeline-items" id="timelineContainer">
+                <div class="timeline-item">
+                    <div class="timeline-time">--:--:--.---</div>
+                    <div class="timeline-value">Premium EV Charging Monitor Initialized • System Ready</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const FIREBASE_URL = "https://charging-ev-2026-default-rtdb.firebaseio.com";
+        const FIREBASE_TOKEN = "2JioSwbtle3xqZu7rPM4bFUz4Z3j0TRYGNjGt1hX";
+        
+        // Data storage
+        let voltageData = [];
+        let currentData = [];
+        let powerData = [];
+        const MAX_DATA_POINTS = 25;
+        let dataUpdateCount = 0;
+        let dashboardStartTime = Date.now();
+        
+        // Balance System
+        let userBalance = 100.00; // Starting balance
+        let isCharging = false;
+        let chargingStartTime = 0;
+        let totalConsumption = 0; // in Watts
+        let ratePerWatt = 1; // ₹1 per Watt
+        
+        // Theme Management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('ev-charging-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('ev-charging-theme', newTheme);
+        });
+        
+        // Format number with decimal places
+        function formatNumber(value, decimals = 3) {
+            if (value === null || value === undefined || isNaN(value)) {
+                return '0.' + '0'.repeat(decimals);
+            }
+            return parseFloat(value).toFixed(decimals);
+        }
+        
+        // Update balance display
+        function updateBalanceDisplay() {
+            const balanceElement = document.getElementById('balanceAmount');
+            balanceElement.textContent = `₹${userBalance.toFixed(2)}`;
+            
+            // Add warning color if balance is low
+            if (userBalance < 10) {
+                balanceElement.style.color = '#EF4444';
+            } else if (userBalance < 50) {
+                balanceElement.style.color = '#F59E0B';
+            } else {
+                balanceElement.style.color = 'white';
+            }
+        }
+        
+        // Add to timeline
+        function addToTimeline(message, type = 'info') {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                fractionalSecondDigits: 3 
+            });
+            
+            const timelineItem = document.createElement('div');
+            timelineItem.className = 'timeline-item';
+            timelineItem.innerHTML = `
+                <div class="timeline-time">${timeString}</div>
+                <div class="timeline-value">${message}</div>
+            `;
+            
+            // Add color based on type
+            timelineItem.style.borderLeftColor = 
+                type === 'voltage' ? '#6366F1' :
+                type === 'current' ? '#10B981' :
+                type === 'power' ? '#F59E0B' :
+                type === 'balance' ? '#8B5CF6' :
+                type === 'charging' ? '#06B6D4' :
+                type === 'warning' ? '#EF4444' : '#6366F1';
+            
+            const container = document.getElementById('timelineContainer');
+            container.insertBefore(timelineItem, container.firstChild);
+            
+            // Limit items
+            if (container.children.length > 15) {
+                container.removeChild(container.lastChild);
+            }
+        }
+        
+        // Money Modal Functions
+        const moneyModal = document.getElementById('moneyModal');
+        const addMoneyBtn = document.getElementById('addMoneyBtn');
+        const closeModal = document.getElementById('closeModal');
+        const amountOptions = document.querySelectorAll('.amount-option');
+        const customAmountInput = document.getElementById('customAmount');
+        const selectedAmountSpan = document.getElementById('selectedAmount');
+        const confirmAmountSpan = document.getElementById('confirmAmount');
+        const confirmAddMoneyBtn = document.getElementById('confirmAddMoney');
+        
+        // Open modal
+        addMoneyBtn.addEventListener('click', () => {
+            moneyModal.classList.add('active');
+            addToTimeline('Add Money modal opened', 'balance');
+        });
+        
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            moneyModal.classList.remove('active');
+        });
+        
+        // Close modal on outside click
+        moneyModal.addEventListener('click', (e) => {
+            if (e.target === moneyModal) {
+                moneyModal.classList.remove('active');
+            }
+        });
+        
+        // Amount selection
+        amountOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                amountOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                
+                const amount = option.dataset.amount;
+                selectedAmountSpan.textContent = amount;
+                confirmAmountSpan.textContent = amount;
+                customAmountInput.value = '';
+            });
+        });
+        
+        // Custom amount input
+        customAmountInput.addEventListener('input', () => {
+            const customAmount = customAmountInput.value;
+            if (customAmount) {
+                amountOptions.forEach(opt => opt.classList.remove('selected'));
+                selectedAmountSpan.textContent = customAmount;
+                confirmAmountSpan.textContent = customAmount;
+            }
+        });
+        
+        // Confirm add money
+        confirmAddMoneyBtn.addEventListener('click', () => {
+            const amount = parseFloat(customAmountInput.value) || 
+                          parseFloat(document.querySelector('.amount-option.selected').dataset.amount);
+            
+            if (amount >= 10) {
+                userBalance += amount;
+                updateBalanceDisplay();
+                moneyModal.classList.remove('active');
+                
+                // Add transaction record
+                addToTimeline(`Added ₹${amount.toFixed(2)} to wallet • New balance: ₹${userBalance.toFixed(2)}`, 'balance');
+                
+                // Show success message
+                showNotification(`Successfully added ₹${amount.toFixed(2)} to your wallet!`, 'success');
+            } else {
+                showNotification('Minimum amount is ₹10', 'warning');
+            }
+        });
+        
+        // Power Toggle
+        const powerToggle = document.getElementById('powerToggle');
+        const chargingStatus = document.getElementById('chargingStatus');
+        const chargingTimer = document.getElementById('chargingTimer');
+        
+        powerToggle.addEventListener('click', () => {
+            if (userBalance < 1) {
+                showNotification('Insufficient balance! Please add money first.', 'warning');
+                return;
+            }
+            
+            isCharging = !isCharging;
+            powerToggle.classList.toggle('active');
+            
+            if (isCharging) {
+                chargingStartTime = Date.now();
+                chargingStatus.textContent = 'CHARGING';
+                chargingStatus.style.color = '#10B981';
+                addToTimeline('Charging started • Rate: ₹1 per Watt', 'charging');
+                showNotification('Charging started! Balance will be deducted automatically.', 'success');
+            } else {
+                chargingStatus.textContent = 'STOPPED';
+                chargingStatus.style.color = '#EF4444';
+                addToTimeline('Charging stopped', 'charging');
+                showNotification('Charging stopped.', 'info');
+            }
+        });
+        
+        // Update charging timer
+        function updateChargingTimer() {
+            if (isCharging) {
+                const elapsed = Date.now() - chargingStartTime;
+                const hours = Math.floor(elapsed / 3600000);
+                const minutes = Math.floor((elapsed % 3600000) / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
+                
+                chargingTimer.textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Simulate balance deduction (1 Watt = ₹1)
+                // In real system, this would be based on actual power consumption
+                if (elapsed > 5000 && Math.random() > 0.7) { // Simulate occasional deduction
+                    const deduction = 0.1; // Simulate 0.1W consumption
+                    userBalance -= deduction;
+                    totalConsumption += deduction;
+                    updateBalanceDisplay();
+                    
+                    if (userBalance <= 0) {
+                        userBalance = 0;
+                        isCharging = false;
+                        powerToggle.classList.remove('active');
+                        chargingStatus.textContent = 'BALANCE LOW';
+                        chargingStatus.style.color = '#EF4444';
+                        addToTimeline('Charging stopped due to insufficient balance', 'warning');
+                        showNotification('Charging stopped! Please add money to continue.', 'warning');
+                    }
+                }
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 30px;
+                right: 30px;
+                padding: 20px 30px;
+                background: ${type === 'success' ? '#10B981' : type === 'warning' ? '#F59E0B' : '#6366F1'};
+                color: white;
+                border-radius: 16px;
+                box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                font-weight: 500;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255,255,255,0.2);
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Fetch data from Firebase
+        async function fetchData() {
+            try {
+                const url = `${FIREBASE_URL}/chargingData.json?auth=${FIREBASE_TOKEN}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data) {
+                    // Update voltage display
+                    const voltage = data.voltage || 0;
+                    document.getElementById('voltageValue').textContent = formatNumber(voltage);
+                    document.getElementById('voltageDetail').textContent = `Bus: ${formatNumber(voltage)}V`;
+                    document.getElementById('loadVoltage').textContent = `Load: ${formatNumber(data.loadVoltage || voltage)}V`;
+                    
+                    // Update current display
+                    const current_mA = data.current_mA || 0;
+                    document.getElementById('currentValue').textContent = formatNumber(current_mA);
+                    document.getElementById('currentDetail').textContent = `DC: ${formatNumber(current_mA)}mA`;
+                    document.getElementById('currentA').textContent = `${formatNumber(current_mA / 1000)} A`;
+                    
+                    // Update power display
+                    const power_mW = data.power_mW || 0;
+                    document.getElementById('powerValue').textContent = formatNumber(power_mW);
+                    document.getElementById('powerDetail').textContent = `Real: ${formatNumber(power_mW)}mW`;
+                    document.getElementById('powerW').textContent = `${formatNumber(power_mW / 1000)} W`;
+                    
+                    // Update energy display
+                    const energy_Wh = data.energy_Wh || 0;
+                    document.getElementById('energyValue').textContent = formatNumber(energy_Wh, 3);
+                    document.getElementById('energyDetail').textContent = `Total: ${formatNumber(energy_Wh, 3)}Wh`;
+                    
+                    // Update efficiency
+                    const efficiency = data.efficiency || ((data.power_mW || 0) / ((data.voltage || 1) * (data.current_mA || 1)) * 100);
+                    document.getElementById('efficiencyValue').textContent = formatNumber(efficiency, 2);
+                    
+                    // Update statistics
+                    document.getElementById('minVoltage').textContent = `${formatNumber(data.minVoltage || 0)} V`;
+                    document.getElementById('maxVoltage').textContent = `${formatNumber(data.maxVoltage || 0)} V`;
+                    document.getElementById('minCurrent').textContent = `${formatNumber(data.minCurrent_mA || 0)} mA`;
+                    document.getElementById('maxCurrent').textContent = `${formatNumber(data.maxCurrent_mA || 0)} mA`;
+                    document.getElementById('avgVoltage').textContent = `${formatNumber(data.avgVoltage || 0)} V`;
+                    document.getElementById('avgCurrent').textContent = `${formatNumber(data.avgCurrent_mA || 0)} mA`;
+                    document.getElementById('totalSamples').textContent = data.totalSamples || 0;
+                    
+                    dataUpdateCount++;
+                    
+                    // Add to timeline occasionally
+                    if (dataUpdateCount % 5 === 0) {
+                        addToTimeline(
+                            `Monitoring: V:${formatNumber(voltage)}V | I:${formatNumber(current_mA)}mA`,
+                            'voltage'
+                        );
+                    }
+                    
+                } else {
+                    addToTimeline('No data received from monitoring system', 'info');
+                }
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        
+        // Update system uptime
+        function updateUptime() {
+            const elapsed = Date.now() - dashboardStartTime;
+            const hours = Math.floor(elapsed / 3600000);
+            const minutes = Math.floor((elapsed % 3600000) / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            
+            document.getElementById('systemUptime').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize theme
+            initTheme();
+            
+            // Initialize balance display
+            updateBalanceDisplay();
+            
+            // Add initial timeline entry
+            addToTimeline('⚡ Premium EV Charging Monitor Started • Smart Balance System Active', 'info');
+            
+            // Start fetching data every 2 seconds
+            setInterval(fetchData, 2000);
+            
+            // Update timers every second
+            setInterval(() => {
+                updateUptime();
+                updateChargingTimer();
+            }, 1000);
+            
+            // Initial fetch
+            fetchData();
+            
+            // Show welcome message
+            setTimeout(() => {
+                showNotification('Welcome to Premium EV Charging Monitor! Add money to start charging.', 'info');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
